@@ -4,6 +4,12 @@ import (
 	"goapp/internal/pkg/watcher"
 )
 
+func deleteStat(s []sessionStats, index int) []sessionStats {
+	ret := make([]sessionStats, 0)
+	ret = append(ret, s[:index]...)
+	return append(ret, s[index+1:]...)
+}
+
 func (s *Server) addWatcher(w *watcher.Watcher) {
 	s.watchersLock.Lock()
 	defer s.watchersLock.Unlock()
@@ -19,7 +25,7 @@ func (s *Server) removeWatcher(w *watcher.Watcher) {
 			s.sessionStats[i].print()
 		}
 	}
-	// Remove watcher.
+
 	delete(s.watchers, w.GetWatcherId())
 }
 

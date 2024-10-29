@@ -1,10 +1,18 @@
 package util
 
 import (
+	"fmt"
+	"math"
 	"math/rand"
 )
 
 var randx = rand.NewSource(42)
+
+func randomizeHex(c byte) byte {
+	val := int(math.Mod(float64(int(c)), float64(16)))
+	hex := fmt.Sprintf("%X", val)
+	return hex[0]
+}
 
 // RandString returns a random string of length n.
 func RandString(n int) string {
@@ -22,7 +30,7 @@ func RandString(n int) string {
 			cache, remain = randx.Int63(), letterIdxMax
 		}
 		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
+			b[i] = randomizeHex(letterBytes[idx])
 			i--
 		}
 		cache >>= letterIdxBits

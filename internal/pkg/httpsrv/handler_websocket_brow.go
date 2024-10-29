@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func (s *Server) handlerWebSocket(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handlerWebSocketBrowser(w http.ResponseWriter, r *http.Request) {
 	// Create and start a watcher.
 	var watch = watcher.New()
 	if err := watch.Start(); err != nil {
@@ -23,8 +23,23 @@ func (s *Server) handlerWebSocket(w http.ResponseWriter, r *http.Request) {
 	s.addWatcher(watch)
 	defer s.removeWatcher(watch)
 
+	/*Checking the Origin should be enough to get rid of the CSRF attacks. Our Front-End application uses
+	  only 1 Http request when we click the Open button, and after that it uses only websockets.
+
+	*/
 	// Start WS.
-	var upgrader = websocket.Upgrader{}
+	var upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			if origin != "http://localhost:8080" {
+				fmt.Printf("Origin %s got denied! \n", origin)
+				return false
+			} else {
+				fmt.Printf("Origin Passes %s \n", origin)
+				return true
+			}
+		},
+	}
 
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

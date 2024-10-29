@@ -26,6 +26,12 @@ func (s *Server) myRoutes() []Route {
 			Name:    "websocket",
 			Method:  "GET",
 			Pattern: "/goapp/ws",
+			HFunc:   s.handlerWrapper(s.handlerWebSocketBrowser),
+		},
+		{
+			Name:    "websocket",
+			Method:  "GET",
+			Pattern: "/goapp/client",
 			HFunc:   s.handlerWrapper(s.handlerWebSocket),
 		},
 		{
